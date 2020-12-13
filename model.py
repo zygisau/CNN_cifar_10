@@ -23,7 +23,7 @@ class Model:
         self.callbacks = []
         self.checkpoint_path = "training_1/cp.ckpt"
         self.model = Sequential()
-        self.__define_model()
+        self.__define_model_1()
         self.__define_optimizers()
         self.__initialize_board()
         self.__initialize_model_saver()
@@ -33,7 +33,8 @@ class Model:
         self.opt = self.optimizer(lr=self.l_rate, momentum=self.momentum)
         self.model.compile(optimizer=self.opt, loss=self.loss, metrics=['accuracy'])
 
-    def __define_model(self):
+    # noinspection DuplicatedCode
+    def __define_model_1(self):
         self.model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same',
                               input_shape=(32, 32, 3)))
         self.model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
@@ -53,6 +54,31 @@ class Model:
         self.model.add(Dropout(0.2))
         self.model.add(Dense(10, activation='softmax'))
 
+    # noinspection DuplicatedCode
+    def __define_model_2(self):
+        self.model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same',
+                              input_shape=(32, 32, 3)))
+        self.model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+        self.model.add(MaxPooling2D((2, 2)))
+        self.model.add(Dropout(0.2))
+        self.model.add(Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+        self.model.add(Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+        self.model.add(MaxPooling2D((2, 2)))
+        self.model.add(Dropout(0.2))
+        self.model.add(Conv2D(128, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+        self.model.add(Conv2D(128, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+        self.model.add(MaxPooling2D((2, 2)))
+        self.model.add(Dropout(0.2))
+
+        self.model.add(Flatten())
+        self.model.add(Dense(128, activation='relu', kernel_initializer='he_uniform'))
+        self.model.add(Dropout(0.2))
+        self.model.add(Dense(64, activation='relu', kernel_initializer='he_uniform'))
+        self.model.add(Dropout(0.2))
+        self.model.add(Dense(32, activation='relu', kernel_initializer='he_uniform'))
+        self.model.add(Dropout(0.2))
+        self.model.add(Dense(10, activation='softmax'))
+
     def fit(self, train_data, train_labels, validation_data, n_epoch=100, batch_size=64, verbose=0):
         self.history = self.model.fit(x=train_data, y=train_labels, batch_size=batch_size, epochs=n_epoch,
                                       verbose=verbose, validation_data=validation_data,
@@ -66,8 +92,8 @@ class Model:
         confusion_matrix = sklearn_cm(test_labels_indexes, predictions_labels_indexes)
         PlotUtils.plot_confusion_matrix(confusion_matrix, class_names=LABELS)
 
-        return MathUtils.calculate_loss(test_labels, predictions_raw), MathUtils.calculate_accuracy(test_labels,
-                                                                                                    predictions_raw)
+        return MathUtils.calculate_loss(test_labels, predictions_raw), MathUtils.calculate_accuracy(
+            test_labels, predictions_raw), predictions_raw
 
     def __initialize_board(self):
         log_dir = "logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
