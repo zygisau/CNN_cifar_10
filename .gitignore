@@ -134,3 +134,5 @@ dmypy.json
 # Logs and data
 logs/
 data/
+logs_old/
+images/
